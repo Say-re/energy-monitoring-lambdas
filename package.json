@@ -1,0 +1,38 @@
+{
+  "dependencies": {
+    "csv-parse": "^5.6.0",
+    "date-fns": "^4.1.0"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.749.0",
+    "@aws-sdk/client-s3": "^3.749.0",
+    "@aws-sdk/lib-dynamodb": "^3.749.0",
+    "@types/node": "^22.13.4",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
+  },
+  "scripts": {
+    "mk-dist-folders": "mkdir -p dist/input dist/history dist/summary dist/upload dist/gen-s3-url",
+    "bundle-input": "npm install && zip -r dist/input/lambda.zip src/input/index.mjs",
+    "bundle-history": "npm install && zip -r dist/history/lambda.zip src/history/index.mjs",
+    "bundle-summary": "rm -r node_modules && npm install --omit=dev && zip -r dist/summary/lambda.zip src/summary/index.mjs node_modules",
+    "bundle-upload": "npm install --omit=dev && zip -r dist/upload/lambda.zip src/upload/index.mjs node_modules",
+    "bundle-gen-s3": "npm install && zip -r dist/gen-s3-url/lambda.zip src/gen-s3-url/index.mjs",
+    "upload-input": "aws s3 cp dist/input/lambda.zip s3://energy-monitoring-pdx/lambdas/input-energy/",
+    "upload-history": "aws s3 cp dist/history/lambda.zip s3://energy-monitoring-pdx/lambdas/history-energy/",
+    "upload-summary": "aws s3 cp dist/summary/lambda.zip s3://energy-monitoring-pdx/lambdas/summary/",
+    "upload-upload": "aws s3 cp dist/upload/lambda.zip s3://energy-monitoring-pdx/lambdas/upload/",
+    "upload-gen-s3": "aws s3 cp dist/gen-s3-url/lambda.zip s3://energy-monitoring-pdx/lambdas/gen-s3-url/",
+    "deploy-input": "aws lambda update-function-code --function-name energy-input --s3-bucket energy-monitoring-pdx --s3-key lambdas/input-energy/lambda.zip",
+    "deploy-history": "aws lambda update-function-code --function-name energy-history --s3-bucket energy-monitoring-pdx --s3-key lambdas/history-energy/lambda.zip",
+    "deploy-summary": "aws lambda update-function-code --function-name energy-summary --s3-bucket energy-monitoring-pdx --s3-key lambdas/summary/lambda.zip",
+    "deploy-upload": "aws lambda update-function-code --function-name energy-upload --s3-bucket energy-monitoring-pdx --s3-key lambdas/upload/lambda.zip",
+    "deploy-gen-s3": "aws lambda update-function-code --function-name gen-s3-url --s3-bucket energy-monitoring-pdx --s3-key lambdas/gen-s3-url/lambda.zip",
+    "all-input": "npm run bundle-input && npm run upload-input && npm run deploy-input",
+    "all-history": "npm run bundle-history && npm run upload-history && npm run deploy-history",
+    "all-summary": "npm run bundle-summary && npm run upload-summary && npm run deploy-summary",
+    "all-upload": "npm run bundle-upload && npm run upload-upload && npm run deploy-upload",
+    "all-gen-s3": "npm run bundle-gen-s3 && npm run upload-gen-s3 && npm run deploy-gen-s3"
+  },
+  "type": "module"
+}
